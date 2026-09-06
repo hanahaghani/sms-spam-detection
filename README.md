@@ -1,11 +1,11 @@
-SMS Spam Classification
+# SMS Spam Classification
 
 این ریپازیتوری شامل دو رویکرد برای تشخیص پیام‌های Spam و Ham است:
 
 - Machine Learning: استفاده از TF-IDF و مدل‌های کلاسیک یادگیری ماشین
 - Deep Learning: استفاده از TF-IDF و یک شبکه عصبی سفارشی با PyTorch
 
-Deep Learning
+## Deep Learning
 
 در این بخش، هدف علاوه بر ساخت مدل، یادگیری عملی فرآیند آموزش و بهینه‌سازی شبکه عصبی، کنترل Overfitting و بررسی تأثیر تکنیک‌های مختلف بود.
 
@@ -30,7 +30,7 @@ Deep Learning
 
 همچنین یک Visualization برای نمایش عبور یک پیام جدید از مراحل TF-IDF و لایه‌های شبکه و مشاهده Activationها و احتمال Spam بودن پیام ایجاد شده است.
 
-Machine Learning
+## Machine Learning
 
 در نسخه Machine Learning، از TfidfVectorizer و Logistic Regression برای تشخیص Spam استفاده شد.
 
@@ -47,6 +47,6 @@ Machine Learning
 
 هدف این مسیر، تقویت مهارت عملی در NLP و همچنین کار بیشتر روی پردازش زبان فارسی است.
 
-Technologies
+# Technologies
 
 Python · Pandas · NumPy · Scikit-learn · PyTorch · Matplotlib · TF-IDF 
