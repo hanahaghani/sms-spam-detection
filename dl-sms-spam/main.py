@@ -158,13 +158,22 @@ with torch.no_grad():
 #plots
 plot_training_history(train_losses,valid_losses,"img/train-valid-loss-linear.png")
 
-print(model1)
 #new data for test
 new_sms = "hi,mylove how is your feeling?"
-
 visualize_new_data(
     text=new_sms,
     model=model1,
     tfidf_vectorizer=vectorized,
     save_path="img/neural_network_path1.png"
 )
+
+new_sms1 = "Congratulations! You won a free prize!"
+visualize_new_data(
+    text=new_sms1,
+    model=model1,
+    tfidf_vectorizer=vectorized,
+    save_path="img/neural_network_path.png"
+)
+
+#save model
+torch.save(model1.state_dict(),"model/sms_spam_linear_model.pth")
