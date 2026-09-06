@@ -10,6 +10,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset,DataLoader
 
+#import utils
+from utils.model_preprocessing import spamclassifier_linear_relu
+from utils.visualization import plot_training_history,visualize_new_data
 
 data=pd.read_csv("data/processed-spam.csv",encoding="latin-1")
 data.info()
@@ -78,7 +81,92 @@ valid_dataloader=DataLoader(
     valid_dataset,batch_size=32
 )
 
-#model
+#model 1
 torch.manual_seed(42)
-n_epoch=30
-criteion=nn.MSELoss()
+
+model1=spamclassifier_linear_relu(x_train.shape[1])
+n_epoch=20
+criterion=nn.BCEWithLogitsLoss()
+
+optimizer=torch.optim.Adam(
+    model1.parameters(),lr=0.001,weight_decay=0.01
+)
+scheduler=torch.optim.lr_scheduler.StepLR(
+    optimizer,step_size=5,gamma=0.5
+)
+#training loop
+train_losses=[]
+valid_losses=[]
+print('-----spamclassifier_linear_relu-----')
+best_valid_loss=float('inf')
+patience=3
+counter=1
+
+#________train dataset_________
+for epoch in range(n_epoch):
+    model1.train()
+    total_train_loss=0
+    for x_batch,y_batch in train_dataloader:
+        optimizer.zero_grad()
+        prediction=model1(x_batch)
+        loss=criterion(prediction,y_batch)
+        loss.backward()
+        optimizer.step()
+        total_train_loss += loss.item()
+
+    train_loss=total_train_loss/len(train_dataloader)
+    train_losses.append(train_loss)
+#_______validation_________
+    model1.eval()
+    total_valid_loss=0
+    with torch.no_grad():
+        for x_batch,y_batch in valid_dataloader:
+            prediction=model1(x_batch)
+            loss=criterion(prediction,y_batch)
+            total_valid_loss+=loss.item()
+        valid_loss=total_valid_loss/len(valid_dataloader)
+        valid_losses.append(valid_loss)
+
+    scheduler.step()
+
+    if valid_loss<best_valid_loss:
+        best_valid_loss=valid_loss
+        counter=0
+    else:
+        counter+=1
+
+    if counter>=patience:
+        print("early stop!!!!!!!!!!!!!!")
+        break
+#------print----
+    print(
+        f"Epoch {epoch + 1}: "
+        f"Train Loss = {train_loss:.4f}, "
+        f"Validation Loss = {valid_loss:.4f}"
+    )
+#_______test____
+model1.eval()
+total_test_loss=0
+
+with torch.no_grad():
+    for x_batch,y_batch in test_dataloader:
+        prediction=model1(x_batch)
+        loss=criterion(prediction,y_batch)
+        total_test_loss +=loss.item()
+    
+    avg_test_loss=total_test_loss/len(test_dataloader)
+    print(f'test loss:{avg_test_loss:.4f}')
+
+#plots
+plot_training_history(train_losses,valid_losses,"img/train-valid-loss-linear.png")
+
+print(model1)
+#new data for test
+new_sms = "hi,mylove how is your feeling?"
+
+visualize_new_data(
+    text=new_sms,
+    model=model1,
+    tfidf_vectorizer=vectorized,
+    save_path="img/neural_network_path1.png"
+)
